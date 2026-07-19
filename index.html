@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Agencia Profesional de Páginas Web</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            color: #0f172a;
+            overflow-x: hidden;
+        }
+
+        /* Canvas 3D Background */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Main content overlay */
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+            background: rgba(248, 250, 252, 0.92);
+            backdrop-filter: blur(2px);
+        }
+
+        /* HEADER & NAV */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(37, 99, 235, 0.2);
+        }
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb, #7c3aed, #06b6d4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        .logo i {
+            background: none;
+            color: #2563eb;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 600;
+            color: #1e293b;
+            transition: 0.3s;
+            position: relative;
+        }
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            transition: width 0.3s;
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+            background: #f1f5f9;
+            padding: 0.5rem;
+            border-radius: 40px;
+            transition: 0.2s;
+        }
+        .cart-count {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: #dc2626;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 0.2rem 0.5rem;
+            border-radius: 30px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* HERO 3D Enhanced */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #2563eb, #4f46e5, #06b6d4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: fadeInUp 0.8s ease;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            color: #334155;
+            max-width: 700px;
+            margin: 1rem auto;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* PRODUCTOS */
+        .products-section {
+            max-width: 1280px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #1e293b, #2563eb);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .product-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            transform: translateY(0);
+        }
+        .product-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 45px -15px rgba(37, 99, 235, 0.3);
+            border-color: #2563eb;
+        }
+        .product-img {
+            height: 200px;
+            background: linear-gradient(145deg, #2563eb20, #7c3aed20);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #2563eb;
+            transition: 0.3s;
+        }
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+        .product-info {
+            padding: 1.5rem;
+        }
+        .product-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .product-desc {
+            color: #475569;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0.75rem 0;
+        }
+        .btn-add {
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn-add:hover {
+            transform: scale(0.98);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        /* MODAL CARRITO */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 550px;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: fadeUp 0.3s;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1rem;
+        }
+        .cart-items {
+            margin: 1rem 0;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .remove-item {
+            background: #fee2e2;
+            border: none;
+            padding: 0.3rem 0.7rem;
+            border-radius: 30px;
+            cursor: pointer;
+            color: #b91c1c;
+        }
+        .cart-total {
+            font-weight: 800;
+            font-size: 1.4rem;
+            text-align: right;
+            margin: 1rem 0;
+        }
+        .checkout-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .close-modal {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+
+        /* WHATSAPP CHAT BUTTON - ATENCIÓN PROFESIONAL */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #25D366;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s;
+            z-index: 1100;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(37, 211, 102, 0.6);
+        }
+
+        /* Panel de soporte flotante mejorado */
+        .support-panel {
+            position: fixed;
+            bottom: 6rem;
+            right: 2rem;
+            width: 350px;
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1200;
+            overflow: hidden;
+            animation: slideInRight 0.3s;
+            border: 1px solid rgba(37,99,235,0.3);
+        }
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .support-header {
+            background: linear-gradient(135deg, #075e54, #128C7E);
+            color: white;
+            padding: 1rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .support-header i {
+            font-size: 1.5rem;
+        }
+        .support-body {
+            padding: 1rem;
+            background: #f9fafb;
+        }
+        .service-selector {
+            margin-bottom: 1rem;
+        }
+        .service-selector select {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            font-weight: 500;
+            background: white;
+        }
+        .support-message {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            margin: 0.5rem 0;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .btn-whatsapp-send {
+            background: #25D366;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: 0.2s;
+        }
+        .btn-whatsapp-send:hover {
+            background: #128C7E;
+            transform: scale(0.98);
+        }
+        .close-support {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        footer {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            color: #cbd5e1;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (max-width: 640px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .support-panel {
+                width: 90%;
+                right: 5%;
+                left: 5%;
+                bottom: 7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+
+<div class="content-wrapper">
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo"><i class="fas fa-cube"></i> Tech<span style="background: none; color:#2563eb;"> Savvy</span> CTG</div>
+            <div class="nav-links">
+                <a href="#">Inicio</a>
+                <a href="#productos">Planes</a>
+                <a href="#" id="openSupportBtn"><i class="fas fa-headset"></i> Soporte</a>
+                <div class="cart-icon" id="cartIcon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="hero">
+        <h1>Lleva tu negocio al <i class="fas fa-cube"></i> mundo digital</h1>
+        <p>Páginas web profesionales con tecnología de punta, carrito de compras y atención personalizada por WhatsApp Business.</p>
+    </section>
+
+    <section id="productos" class="products-section">
+        <h2 class="section-title"><i class="fas fa-rocket"></i> Nuestros Planes Premium</h2>
+        <div class="products-grid" id="productsGrid"></div>
+    </section>
+
+    <!-- MODAL CARRITO -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div class="cart-header">
+                <h2><i class="fas fa-shopping-bag"></i> Tu Carrito</h2>
+                <button class="close-modal" id="closeCartBtn">Cerrar</button>
+            </div>
+            <div id="cartItemsList" class="cart-items"></div>
+            <div id="cartTotal" class="cart-total">Total: $0</div>
+            <button id="checkoutButton" class="checkout-btn"><i class="fas fa-credit-card"></i> Finalizar Compra</button>
+            <p style="font-size: 0.7rem; text-align:center; margin-top:1rem;">✅ Simulación de compra - Te contactaremos por WhatsApp</p>
+        </div>
+    </div>
+
+    <!-- SISTEMA DE ATENCIÓN PROFESIONAL VÍA WHATSAPP -->
+    <div class="whatsapp-float" id="whatsappFloatBtn">
+        <i class="fab fa-whatsapp"></i>
+    </div>
+    
+    <div class="support-panel" id="supportPanel">
+        <div class="support-header">
+            <div><i class="fab fa-whatsapp"></i> Asesoría Profesional</div>
+            <button class="close-support" id="closeSupportBtn">&times;</button>
+        </div>
+        <div class="support-body">
+            <p style="margin-bottom: 0.8rem; color:#1e293b;"><i class="fas fa-comment-dots"></i> Cuéntanos qué servicio necesitas y te asesoraremos por WhatsApp:</p>
+            <div class="service-selector">
+                <select id="serviceSelect">
+                    <option value="Landing Page Profesional - $299">🚀 Landing Page ($299)</option>
+                    <option value="Tienda Online Básica - $499">🛍️ Tienda Online Básica ($499)</option>
+                    <option value="Web Corporativa Avanzada - $799">🏢 Web Corporativa ($799)</option>
+                    <option value="E-commerce Pro - $1299">💎 E-commerce Pro ($1299)</option>
+                    <option value="Portafolio Creativo - $349">🎨 Portafolio Creativo ($349)</option>
+                    <option value="PWA + Móvil First - $999">📱 PWA + Móvil First ($999)</option>
+                    <option value="Consulta Personalizada">📞 Consulta Personalizada / Otro</option>
+                </select>
+            </div>
+            <textarea class="support-message" id="supportMessage" rows="3" placeholder="Describe tu proyecto o necesidades específicas... (ej: necesito tienda con 200 productos, diseño moderno)"></textarea>
+            <button class="btn-whatsapp-send" id="sendWhatsAppBtn">
+                <i class="fab fa-whatsapp"></i> Enviar a WhatsApp y recibir asesoría
+            </button>
+            <p style="font-size: 0.7rem; margin-top: 0.8rem; color:#64748b;">🔹 Un asesor te responderá en minutos con propuesta personalizada</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 WebCraft 3D — Agencia de desarrollo web con atención por WhatsApp Business 24/7</p>
+        <p style="margin-top:0.5rem;"><i class="fab fa-whatsapp"></i> +57 300 123 4567  |  <i class="fas fa-envelope"></i> ventas@webcraft3d.com</p>
+    </footer>
+</div>
+
+<!-- Three.js CDN -->
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+        }
+    }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+
+    // Configuración 3D animada
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0f172a);
+    scene.fog = new THREE.FogExp2(0x0f172a, 0.008);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 2, 12);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    // Luces
+    const ambientLight = new THREE.AmbientLight(0x404060);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.position.set(2, 5, 3);
+    scene.add(dirLight);
+    const backLight = new THREE.PointLight(0x2563eb, 0.5);
+    backLight.position.set(-2, 1, -4);
+    scene.add(backLight);
+    
+    const pointLight = new THREE.PointLight(0x7c3aed, 0.8);
+    pointLight.position.set(1, 2, 2);
+    scene.add(pointLight);
+
+    // Objeto central: cubo rotante con wireframe + esferas orbitando
+    const geometry = new THREE.IcosahedronGeometry(1.2, 0);
+    const material = new THREE.MeshStandardMaterial({ color: 0x2563eb, metalness: 0.7, roughness: 0.2, emissive: 0x0a2350, emissiveIntensity: 0.3 });
+    const coreMesh = new THREE.Mesh(geometry, material);
+    scene.add(coreMesh);
+    
+    const wireframeGeo = new THREE.IcosahedronGeometry(1.25, 0);
+    const wireframeMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, wireframe: true, transparent: true, opacity: 0.3 });
+    const wireframeMesh = new THREE.Mesh(wireframeGeo, wireframeMat);
+    scene.add(wireframeMesh);
+    
+    // Partículas flotantes
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 800;
+    const posArray = new Float32Array(particlesCount * 3);
+    for(let i = 0; i < particlesCount; i++) {
+        posArray[i*3] = (Math.random() - 0.5) * 40;
+        posArray[i*3+1] = (Math.random() - 0.5) * 20;
+        posArray[i*3+2] = (Math.random() - 0.5) * 20 - 10;
+    }
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMat = new THREE.PointsMaterial({ color: 0x3b82f6, size: 0.08, transparent: true, opacity: 0.5 });
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMat);
+    scene.add(particlesMesh);
+    
+    // Anillos orbitantes
+    const ringGeo = new THREE.TorusGeometry(1.8, 0.05, 64, 200);
+    const ringMat = new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x0e7490 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    scene.add(ring);
+    
+    const ring2Geo = new THREE.TorusGeometry(2.2, 0.03, 64, 200);
+    const ring2Mat = new THREE.MeshStandardMaterial({ color: 0x8b5cf6 });
+    const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+    scene.add(ring2);
+    
+    let time = 0;
+    
+    function animate3D() {
+        requestAnimationFrame(animate3D);
+        time += 0.01;
+        
+        coreMesh.rotation.x = time * 0.5;
+        coreMesh.rotation.y = time * 0.8;
+        wireframeMesh.rotation.x = time * 0.5;
+        wireframeMesh.rotation.y = time * 0.8;
+        ring.rotation.x = Math.sin(time * 0.3) * 0.5;
+        ring.rotation.z = time * 0.5;
+        ring2.rotation.x = Math.cos(time * 0.4) * 0.5;
+        ring2.rotation.z = time * 0.7;
+        
+        particlesMesh.rotation.y = time * 0.05;
+        
+        camera.position.x = Math.sin(time * 0.2) * 0.8;
+        camera.position.y = 2 + Math.sin(time * 0.5) * 0.2;
+        camera.lookAt(0, 0, 0);
+        
+        renderer.render(scene, camera);
+    }
+    
+    animate3D();
+    
+    window.addEventListener('resize', onWindowResize, false);
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+</script>
+
+<script type="text/javascript">
+    // PRODUCTOS
+    const products = [
+        { id: 1, name: "Landing Page Profesional", description: "Diseño premium, responsive, animaciones 3D y formulario inteligente.", price: 299, icon: "fa-globe" },
+        { id: 2, name: "Tienda Online Básica", description: "Catálogo + carrito, pasarela de pagos integrada, hasta 100 productos.", price: 499, icon: "fa-store" },
+        { id: 3, name: "Web Corporativa Avanzada", description: "CMS, SEO avanzado, blog, panel admin y 10 páginas internas.", price: 799, icon: "fa-building" },
+        { id: 4, name: "E-commerce Pro", description: "Marketplace completo, gestión de inventario, cupones y analytics.", price: 1299, icon: "fa-cart-shopping" },
+        { id: 5, name: "Portafolio Creativo", description: "Galería interactiva, filtros, efectos 3D y diseño único.", price: 349, icon: "fa-camera" },
+        { id: 6, name: "PWA + Móvil First", description: "Progressive Web App, offline mode, notificaciones push.", price: 999, icon: "fa-mobile-alt" }
+    ];
+
+    let cart = [];
+
+    function saveCart() { localStorage.setItem("webcraft_cart", JSON.stringify(cart)); updateCartUI(); }
+    function loadCart() { const stored = localStorage.getItem("webcraft_cart"); if(stored) { cart = JSON.parse(stored); } updateCartUI(); }
+    
+    function addToCart(product) {
+        const existing = cart.find(item => item.id === product.id);
+        if(existing) existing.quantity += 1;
+        else cart.push({ ...product, quantity: 1 });
+        saveCart();
+        showToast(`✅ ${product.name} agregado al carrito`);
+    }
+    
+    function removeFromCart(id) { cart = cart.filter(item => item.id !== id); saveCart(); showToast(`🗑️ Producto eliminado`); }
+    
+    function updateCartUI() {
+        const count = cart.reduce((s, i) => s + i.quantity, 0);
+        document.getElementById("cartCount").innerText = count;
+        renderCartModal();
+    }
+    
+    function renderCartModal() {
+        const container = document.getElementById("cartItemsList");
+        const totalSpan = document.getElementById("cartTotal");
+        if(!container) return;
+        if(cart.length === 0) { container.innerHTML = `<div style="text-align:center; padding:2rem;">🛒 Vacío</div>`; totalSpan.innerHTML = `Total: $0`; return; }
+        let total = 0;
+        let html = "";
+        cart.forEach(item => {
+            const subtotal = item.price * item.quantity;
+            total += subtotal;
+            html += `<div class="cart-item"><div><h4>${item.name} x${item.quantity}</h4><small>$${item.price}</small></div><div><span>$${subtotal}</span> <button class="remove-item" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button></div></div>`;
+        });
+        container.innerHTML = html;
+        totalSpan.innerHTML = `Total: $${total}`;
+        document.querySelectorAll('.remove-item').forEach(btn => { btn.addEventListener('click', (e) => { const id = parseInt(btn.getAttribute('data-id')); removeFromCart(id); }); });
+    }
+    
+    function showToast(msg) { const toast = document.getElementById("toastMsg"); if(!toast) { const t = document.createElement("div"); t.id="toastMsg"; t.className="toast-notify"; document.body.appendChild(t); } const tdiv = document.getElementById("toastMsg"); tdiv.innerText = msg; tdiv.style.opacity = "1"; setTimeout(() => { if(tdiv) tdiv.style.opacity = "0"; }, 2500); }
+    
+    function checkout() {
+        if(cart.length === 0) { showToast("❌ Carrito vacío"); return; }
+        const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+        alert(`✨ ¡Gracias por tu compra! Total: $${total}\nUn asesor se contactará contigo por WhatsApp para coordinar el proyecto.`);
+        cart = [];
+        saveCart();
+        renderCartModal();
+        document.getElementById("cartModal").style.display = "none";
+        showToast("🎉 Pedido recibido, te contactaremos pronto");
+    }
+    
+    function renderProducts() {
+        const grid = document.getElementById("productsGrid");
+        products.forEach(prod => {
+            const card = document.createElement("div");
+            card.className = "product-card";
+            card.innerHTML = `<div class="product-img"><i class="fas ${prod.icon} fa-3x"></i></div><div class="product-info"><div class="product-title">${prod.name}</div><div class="product-desc">${prod.description}</div><div class="product-price">$${prod.price}</div><button class="btn-add" data-id="${prod.id}"><i class="fas fa-cart-plus"></i> Agregar</button></div>`;
+            grid.appendChild(card);
+            card.querySelector(".btn-add").addEventListener("click", () => addToCart(prod));
+        });
+    }
+    
+    // SISTEMA DE ATENCIÓN PROFESIONAL CON WHATSAPP
+    function openWhatsAppSupport(serviceName, customMessage) {
+        let phoneNumber = "573001234567"; // Número de WhatsApp empresarial (cámbialo por el tuyo)
+        let text = `Hola, necesito asesoría sobre: *${serviceName}*. %0A%0A${customMessage}%0A%0A👨‍💻 Vengo desde la tienda WebCraft 3D y quiero avanzar con mi proyecto web.`;
+        const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+        showToast("📱 Redirigiendo a WhatsApp con tu consulta...");
+        // Cerrar panel después de enviar
+        document.getElementById("supportPanel").style.display = "none";
+    }
+    
+    // Eventos UI
+    document.addEventListener("DOMContentLoaded", () => {
+        renderProducts();
+        loadCart();
+        
+        const cartIcon = document.getElementById("cartIcon");
+        const cartModal = document.getElementById("cartModal");
+        const closeCart = document.getElementById("closeCartBtn");
+        const checkoutBtn = document.getElementById("checkoutButton");
+        
+        cartIcon.onclick = () => { renderCartModal(); cartModal.style.display = "flex"; };
+        closeCart.onclick = () => cartModal.style.display = "none";
+        checkoutBtn.onclick = checkout;
+        window.onclick = (e) => { if(e.target === cartModal) cartModal.style.display = "none"; };
+        
+        // Soporte WhatsApp
+        const whatsappFloat = document.getElementById("whatsappFloatBtn");
+        const supportPanel = document.getElementById("supportPanel");
+        const closeSupport = document.getElementById("closeSupportBtn");
+        const openSupportBtn = document.getElementById("openSupportBtn");
+        const sendWhatsApp = document.getElementById("sendWhatsAppBtn");
+        
+        function toggleSupport(e) { e.stopPropagation(); if(supportPanel.style.display === "flex") supportPanel.style.display = "none"; else supportPanel.style.display = "flex"; }
+        whatsappFloat.onclick = toggleSupport;
+        if(openSupportBtn) openSupportBtn.onclick = (e) => { e.preventDefault(); toggleSupport(e); };
+        closeSupport.onclick = () => supportPanel.style.display = "none";
+        
+        sendWhatsApp.onclick = () => {
+            const serviceSelect = document.getElementById("serviceSelect");
+            const selectedService = serviceSelect.value;
+            const customMsg = document.getElementById("supportMessage").value.trim();
+            let finalMessage = customMsg || "Me gustaría recibir una cotización y asesoría personalizada para mi sitio web.";
+            openWhatsAppSupport(selectedService, finalMessage);
+        };
+        
+        // Toast container
+        const toastDiv = document.createElement("div");
+        toastDiv.id = "toastMsg";
+        toastDiv.className = "toast-notify";
+        document.body.appendChild(toastDiv);
+    });
+</script>
+</body>
+</html>
